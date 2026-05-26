@@ -1,9 +1,12 @@
 ﻿
 import { LandingHero } from "@/components/LandingHero";
+import { PartnersSection } from "@/components/PartnersSection";
+import { ProjectsCarousel } from "@/components/ProjectsCarousel";
 import { QuemSomos } from "@/components/QuemSomos";
 import { TransparencySection } from "@/components/TransparencySection";
-import { ProjectsCarousel } from "@/components/ProjectsCarousel";
+
 import { projects } from "@/data/projects";
+
 
 export default function Home() {
   return (
@@ -11,6 +14,7 @@ export default function Home() {
       <LandingHero/>
       <QuemSomos />
       <ProjectsCarousel projects={projects}/>
+      <PartnersSection />
       <TransparencySection />
     </main>
   );
