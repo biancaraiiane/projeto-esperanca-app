@@ -11,8 +11,10 @@ import { MdEmail } from "react-icons/md";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 
+import { useCreateVolunteer } from "@/hooks/useVolunteers/useVolunteers";
 import { maskPhone } from "@/utils/maskPhone";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "sonner";
 
 import { volunteerSchema, type VolunteerFormData } from "./shema";
 
@@ -22,6 +24,8 @@ interface VolunteerModalProps {
 }
 
 export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
+  const { mutateAsync: createVolunteer } = useCreateVolunteer();
+
   const {
     control,
     handleSubmit,
@@ -39,10 +43,21 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
   });
 
   async function handleVolunteerSubmit(data: VolunteerFormData) {
-    console.log("Dados do voluntário:", data);
+    try {
+      await createVolunteer({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        availableSchedule: data.horario,
+      });
 
-    reset();
-    onClose();
+      toast.success("Cadastro realizado com sucesso!");
+      reset();
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível realizar o cadastro. Tente novamente.");
+    }
   }
 
   function handleCloseModal() {

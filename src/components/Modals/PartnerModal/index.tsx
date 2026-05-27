@@ -10,8 +10,10 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Textarea } from "@/components/TextArea";
 
+import { useCreatePartnership } from "@/hooks/usePartnerships/usePartnerships";
 import { maskPhone } from "@/utils/maskPhone";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "sonner";
 
 import { partnerSchema, type PartnerFormData } from "./schema";
 
@@ -21,6 +23,8 @@ interface PartnerModalProps {
 }
 
 export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
+  const { mutateAsync: createPartnership } = useCreatePartnership();
+
   const {
     control,
     handleSubmit,
@@ -37,11 +41,22 @@ export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
     },
   });
 
-  function handlePartnerSubmit(data: PartnerFormData) {
-    console.log("Dados da parceria:", data);
+  async function handlePartnerSubmit(data: PartnerFormData) {
+    try {
+      await createPartnership({
+        companyName: data.companyName,
+        email: data.email,
+        phone: data.phone,
+        partnershipType: data.description,
+      });
 
-    reset();
-    onClose();
+      toast.success("Cadastro realizado com sucesso!");
+      reset();
+      onClose();
+    } catch (error) {
+      console.error(error);
+      toast.error("Não foi possível realizar o cadastro. Tente novamente.");
+    }
   }
 
   if (!isOpen) return null;

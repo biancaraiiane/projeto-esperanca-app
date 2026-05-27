@@ -44,6 +44,22 @@ export function useGetVolunteers(filters?: GetVolunteersFilters) {
   });
 }
 
+interface CreateVolunteerPayload {
+  name: string;
+  email: string;
+  phone: string;
+  availableSchedule: string;
+}
+
+export function useCreateVolunteer() {
+  return useMutation({
+    mutationFn: async (payload: CreateVolunteerPayload) => {
+      const { data } = await api.post("/volunteers", payload);
+      return data;
+    },
+  });
+}
+
 export function useUpdateVolunteerStatus() {
   const queryClient = useQueryClient();
 
