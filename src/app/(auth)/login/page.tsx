@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -10,19 +9,20 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+import { useAuthContext } from "@/context";
 import { useTheme } from "@/context/ThemeContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { loginSchema, type LoginFormData } from "./schema";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const { handleSignIn, isPending } = useAuthContext();
   const { isDark, isMounted } = useTheme();
 
   const {
     control,
     handleSubmit,
-    formState: { isValid, isSubmitting },
+    formState: { isValid },
   } = useForm<LoginFormData>({
     resolver: yupResolver(loginSchema),
     mode: "onChange",
@@ -32,22 +32,15 @@ export default function LoginPage() {
     },
   });
 
-  async function handleLogin(data: LoginFormData) {
-    console.log("Dados do login:", data);
-
-    // Depois você troca por sua chamada real de API.
-    // Exemplo:
-    // await api.post("/auth/login", data);
-
-    router.push("/dashboard");
+  function handleLogin(data: LoginFormData) {
+    handleSignIn({
+      email: data.email,
+      password: data.password,
+    });
   }
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-(--bg-main) px-5 py-10">
-      {/* Onda amarela superior */}
-      <div className="absolute right-8 top-8 z-20">
-        <ThemeToggle />
-      </div>
       <svg
         className="absolute left-0 top-0 z-0 h-30 w-full"
         viewBox="0 0 1440 180"
@@ -60,7 +53,6 @@ export default function LoginPage() {
         />
       </svg>
 
-      {/* Ondas inferiores */}
       <svg
         className="absolute bottom-0 left-0 z-0 h-52.5 w-full"
         viewBox="0 0 1440 260"
@@ -83,7 +75,10 @@ export default function LoginPage() {
         />
       </svg>
 
-      {/* Botão voltar */}
+      <div className="absolute right-8 top-8 z-20">
+        <ThemeToggle />
+      </div>
+
       <Link
         href="/"
         aria-label="Voltar para página inicial"
@@ -92,7 +87,7 @@ export default function LoginPage() {
         <FiArrowLeft size={28} />
       </Link>
 
-      <section className="relative z-10 flex w-full max-w-105 flex-col items-center">
+      <section className="relative z-10 flex w-full max-w-85 flex-col items-center">
         <Image
           src={isMounted && isDark ? "/logo-dark.png" : "/logo.png"}
           alt="Projeto Esperança"
@@ -103,7 +98,7 @@ export default function LoginPage() {
         />
 
         <h1 className="mb-4 text-center text-3xl font-normal text-(--text-title)">
-          Login
+          Entrar
         </h1>
 
         <form
@@ -143,11 +138,11 @@ export default function LoginPage() {
             type="submit"
             variant="cyan"
             size="md"
-            disabled={!isValid || isSubmitting}
-            isLoading={isSubmitting}
-            className="mt-4 min-w-37.5 px-8 py-3 text-sm"
+            disabled={!isValid || isPending}
+            isLoading={isPending}
+            className="mt-4 min-w-37.5 bg-linear-to-r from-(--primary-cyan) to-(--primary-blue) px-8 py-3 text-sm"
           >
-            ENTRAR
+            LOGIN
           </Button>
         </form>
       </section>
