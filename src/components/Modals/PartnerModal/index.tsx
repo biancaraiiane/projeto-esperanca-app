@@ -46,7 +46,7 @@ export function PartnerModal({ isOpen, onClose }: PartnerModalProps) {
       await createPartnership({
         companyName: data.companyName,
         email: data.email,
-        phone: data.phone,
+        phone: data.phone.replace(/\D/g, ""),
         partnershipType: data.description,
       });
 
