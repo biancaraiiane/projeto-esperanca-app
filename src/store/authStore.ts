@@ -2,10 +2,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface UserData {
-  id: number;
-  email: string;
-  phone: string;
+  id: string;
   name: string;
+  email: string;
+  birthDate?: string;
 }
 
 interface AuthState {
@@ -29,6 +29,6 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "session",
-    }
-  )
+    },
+  ),
 );
