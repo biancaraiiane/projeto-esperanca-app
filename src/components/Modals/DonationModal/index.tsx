@@ -8,14 +8,9 @@ interface DonationModalProps {
   onClose: () => void;
 }
 
-const pixEmail = "projetoesperancaaju@hotmail.com";
 const cnpj = "08.278.469/0001-07";
 
 export function DonationModal({ isOpen, onClose }: DonationModalProps) {
-  async function handleCopyPixEmail() {
-    await navigator.clipboard.writeText(pixEmail);
-  }
-
   async function handleCopyCnpj() {
     await navigator.clipboard.writeText(cnpj);
   }
@@ -72,10 +67,10 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
 
               <button
                 type="button"
-                onClick={handleCopyPixEmail}
+                onClick={handleCopyCnpj}
                 className="mt-1 inline-flex items-center gap-2 break-all text-left text-[13px] leading-tight transition hover:text-(--primary-blue) dark:hover:text-(--primary-cyan)"
               >
-                {pixEmail}
+                {cnpj}
                 <FiCopy size={15} />
               </button>
             </div>
@@ -97,13 +92,6 @@ export function DonationModal({ isOpen, onClose }: DonationModalProps) {
               <p>Beneficiário:</p>
               <p className="text-[13px] leading-tight">
                 Projeto Esperança
-              </p>
-            </div>
-
-            <div>
-              <p>Chave:</p>
-              <p className="break-all text-[13px] leading-tight">
-                {pixEmail}
               </p>
             </div>
           </div>

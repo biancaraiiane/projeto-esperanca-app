@@ -1,3 +1,5 @@
+"use client";
+
 import { type ReactNode } from "react";
 
 import { useTooltipStore } from "@/store/useTooltipStore";
@@ -9,12 +11,12 @@ interface TooltipProps {
   position?: "top" | "bottom";
 }
 
-export const Tooltip = ({
+export function Tooltip({
   children,
   message,
   id,
   position = "top",
-}: TooltipProps) => {
+}: TooltipProps) {
   const { visibleTooltip, showTooltip, hideTooltip } = useTooltipStore();
 
   const isVisible = visibleTooltip === id;
@@ -23,12 +25,13 @@ export const Tooltip = ({
 
   return (
     <div
-      className="relative inline-block"
+      className="relative inline-flex"
       onMouseEnter={() => showTooltip(id)}
       onMouseLeave={hideTooltip}
     >
       {children}
-      {visibleTooltip === id && (
+
+      {isVisible && (
         <div
           style={{
             opacity,
@@ -36,15 +39,19 @@ export const Tooltip = ({
             transition: "opacity 0.2s ease-in-out, transform 0.2s ease-in-out",
             whiteSpace: "nowrap",
           }}
-          className={`absolute right-1/2 transform -translate-x-1/2 ${
-            position === "top" ? "-top-10" : "top-full mt-2"
-          } p-2 bg-white border border-[#CAC4D0] rounded-lg shadow-md ${
-            position === "top" ? "rounded-br-none" : "rounded-tr-none"
-          }`}
+          className={`
+            absolute right-1/2 z-50 -translate-x-1/2
+            ${
+              position === "top" ? "-top-10" : "top-full mt-2"
+            }
+            rounded-lg border border-[#CAC4D0] bg-white p-2 text-(--text-title) shadow-md
+            dark:border-(--border-light) dark:bg-(--bg-card-soft) dark:text-(--text-body)
+            ${position === "top" ? "rounded-br-none" : "rounded-tr-none"}
+          `}
         >
-          <p className="font-light text-xs">{message}</p>
+          <p className="text-xs font-medium">{message}</p>
         </div>
       )}
     </div>
   );
-};
+}

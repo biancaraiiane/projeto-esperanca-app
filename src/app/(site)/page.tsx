@@ -1,4 +1,5 @@
-﻿import { InstagramSection } from "@/components/InstagramSection";
+﻿import { ContactSection } from "@/components/ContactSection";
+import { InstagramSection } from "@/components/InstagramSection";
 import { LandingHero } from "@/components/LandingHero";
 import { PartnersSection } from "@/components/PartnersSection";
 import { ProjectsCarousel } from "@/components/ProjectsCarousel";
@@ -17,6 +18,7 @@ export default function Home() {
       <InstagramSection />
       <PartnersSection />
       <TransparencySection />
+      <ContactSection />
     </main>
   );
 }

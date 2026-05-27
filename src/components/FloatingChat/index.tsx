@@ -1,258 +1,269 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { FaHome } from "react-icons/fa";
 import { FiMoreVertical, FiSend, FiX } from "react-icons/fi";
 
-interface Message {
-  id: number;
+import { useAskFaq } from "@/hooks/useFaq/useAskFaq";
+
+interface ChatMessage {
+  id: string;
   text: string;
   sender: "bot" | "user";
   time: string;
 }
 
-const QUICK_ACTIONS = [
+interface QuickAction {
+  label: string;
+  icon: string;
+  message: string;
+  className: string;
+}
+
+function getCurrentTime() {
+  return new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+}
+
+function createMessage(text: string, sender: "bot" | "user"): ChatMessage {
+  return {
+    id: crypto.randomUUID(),
+    text,
+    sender,
+    time: getCurrentTime(),
+  };
+}
+
+const initialMessages: ChatMessage[] = [
   {
-    label: "Quero ser voluntário",
-    emoji: "🙋",
-    className:
-      "bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800",
-  },
-  {
-    label: "Como doar?",
-    emoji: "💚",
-    className:
-      "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800",
-  },
-  {
-    label: "Projetos",
-    emoji: "🏠",
-    className:
-      "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800",
-  },
-  {
-    label: "Falar com atendente",
-    emoji: "💬",
-    className:
-      "bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800",
+    id: "1",
+    text: "👋 Olá! Seja bem-vindo(a) ao Projeto Esperança! 💙\nComo podemos ajudar você hoje?",
+    sender: "bot",
+    time: getCurrentTime(),
   },
 ];
 
-function getTime() {
-  return new Date().toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-const INITIAL_MESSAGES: Message[] = [
+const quickActions: QuickAction[] = [
   {
-    id: 1,
-    text: "👋 Olá! Seja bem-vindo(a) ao\nProjeto Esperança! 💙\nComo podemos ajudar você hoje?",
-    sender: "bot",
-    time: getTime(),
+    label: "Quero ser voluntário",
+    icon: "🙋",
+    message: "Quero ser voluntário",
+    className:
+      "border-[#27C9E8] bg-[#EFFFFF] text-(--primary-blue) dark:bg-[#09272D]",
+  },
+  {
+    label: "Como doar?",
+    icon: "💚",
+    message: "Como doar?",
+    className:
+      "border-[#72E39B] bg-[#F0FFF5] text-[#008A36] dark:bg-[#0D2B18]",
+  },
+  {
+    label: "Projetos",
+    icon: "🏠",
+    message: "Quais são os projetos?",
+    className:
+      "border-[#F3BF45] bg-[#FFFDF0] text-[#D87500] dark:bg-[#2B2108]",
+  },
+  {
+    label: "Falar com atendente",
+    icon: "💬",
+    message: "Quero falar com atendente",
+    className:
+      "border-[#F6A7D7] bg-[#FFF3FA] text-(--primary-pink) dark:bg-[#2B1020]",
   },
 ];
 
 export function FloatingChat() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
-  const [input, setInput] = useState("");
-  const [showQuickActions, setShowQuickActions] = useState(true);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
 
-  useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const { mutateAsync: askFaq, isPending } = useAskFaq();
+
+  function addMessage(text: string, sender: "bot" | "user") {
+    setMessages((prevState) => [...prevState, createMessage(text, sender)]);
+  }
+
+  async function handleSendMessage(customMessage?: string) {
+    const finalMessage = customMessage ?? message.trim();
+
+    if (!finalMessage || isPending) return;
+
+    addMessage(finalMessage, "user");
+    setMessage("");
+
+    try {
+      const response = await askFaq({
+        message: finalMessage,
+      });
+
+      addMessage(response.answer, "bot");
+    } catch (error) {
+      console.error(error);
+
+      addMessage(
+        "Não consegui responder agora. Tente novamente em alguns instantes ou fale conosco pelos canais oficiais. 💙",
+        "bot",
+      );
+    } finally {
+      inputRef.current?.focus();
     }
-  }, [messages, isOpen]);
-
-  const sendMessage = (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed) return;
-
-    setShowQuickActions(false);
-    setMessages((prev) => [
-      ...prev,
-      { id: Date.now(), text: trimmed, sender: "user", time: getTime() },
-    ]);
-    setInput("");
-
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          text: "Obrigado pelo contato! Em breve um de nossos atendentes responderá. 💙",
-          sender: "bot",
-          time: getTime(),
-        },
-      ]);
-    }, 900);
-  };
+  }
 
   return (
     <>
-      {/* ─── Painel do chat ──────────────────────────────────── */}
       {isOpen && (
-        <div
-          role="dialog"
-          aria-label="Chat do Projeto Esperança"
-          className="fixed bottom-24 right-4 z-50 flex w-85 max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl shadow-2xl"
-          style={{ maxHeight: "520px", background: "var(--bg-card)" }}
-        >
-          {/* Cabeçalho */}
-          <div
-            className="flex items-center gap-3 px-4 py-3"
-            style={{
-              background: "linear-gradient(135deg, #35CFE0 0%, #0057D9 100%)",
-            }}
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow">
-              🏠
-            </div>
+        <div className="fixed bottom-24 right-5 z-200 flex h-140 w-85 max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-(--bg-card)">
+          <header className="flex items-center justify-between bg-linear-to-r from-[#12BDE2] to-[#1163E8] px-4 py-3 text-white">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl shadow-md">
+                🏠
+              </div>
 
-            <div className="flex-1 min-w-0">
-              <p className="truncate text-sm font-semibold text-white">
-                Fale com a Esperança
-              </p>
-              <p className="flex items-center gap-1.5 text-xs text-white/90">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-green-400" />
-                Estamos online!
-              </p>
-            </div>
+              <div>
+                <h2 className="text-sm font-black">Fale com a Esperança</h2>
 
-            <div className="flex items-center gap-0.5">
-              <button
-                aria-label="Mais opções"
-                className="rounded p-1 text-white/80 transition hover:text-white"
-              >
-                <FiMoreVertical size={16} />
-              </button>
-              <button
-                aria-label="Fechar chat"
-                onClick={() => setIsOpen(false)}
-                className="rounded p-1 text-white/80 transition hover:text-white  focus-visible:outline-2 focus-visible:outline-white"
-              >
-                <FiX size={18} />
-              </button>
-            </div>
-          </div>
-
-          {/* Mensagens */}
-          <div
-            className="flex-1 space-y-3 overflow-y-auto p-4"
-            style={{ background: "var(--bg-section)" }}
-          >
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm ${
-                    msg.sender === "user"
-                      ? "rounded-br-none bg-blue-600 text-white"
-                      : "rounded-bl-none bg-white shadow-sm dark:bg-[#1e2124]"
-                  }`}
-                  style={
-                    msg.sender === "bot" ? { color: "var(--text-body)" } : {}
-                  }
-                >
-                  <p className="whitespace-pre-line leading-relaxed">
-                    {msg.text}
-                  </p>
-                  <p
-                    className={`mt-1 text-[10px] ${
-                      msg.sender === "user"
-                        ? "text-right text-blue-200"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {msg.time}
-                  </p>
+                <div className="mt-1 flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#2BFF72]" />
+                  <p className="text-xs font-medium">Estamos online!</p>
                 </div>
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Ações rápidas */}
-          {showQuickActions && (
-            <div
-              className="grid grid-cols-2 gap-2 px-4 py-3"
-              style={{ background: "var(--bg-section)" }}
-            >
-              {QUICK_ACTIONS.map((action) => (
-                <button
-                  key={action.label}
-                  onClick={() => sendMessage(action.label)}
-                  className={`flex items-center gap-1.5 rounded-xl border px-2 py-2 text-xs font-medium transition hover:opacity-75 ${action.className}`}
-                >
-                  <span>{action.emoji}</span>
-                  <span className="leading-tight">{action.label}</span>
-                </button>
-              ))}
             </div>
-          )}
 
-          {/* Campo de entrada */}
-          <div
-            className="flex items-center gap-2 border-t px-3 py-3"
-            style={{
-              borderColor: "var(--border-light)",
-              background: "var(--bg-card)",
-            }}
-          >
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") sendMessage(input);
-              }}
-              placeholder="Digite sua mensagem..."
-              aria-label="Campo de mensagem"
-              className="flex-1 rounded-full px-3 py-2 text-sm outline-none"
-              style={{
-                border: "1.5px solid var(--border-light)",
-                background: "var(--bg-section)",
-                color: "var(--text-body)",
-              }}
-            />
-            <button
-              aria-label="Enviar mensagem"
-              onClick={() => sendMessage(input)}
-              disabled={!input.trim()}
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-blue-600"
-            >
-              <FiSend size={15} />
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                aria-label="Mais opções"
+                className="cursor-pointer text-white transition hover:scale-110"
+              >
+                <FiMoreVertical size={20} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                aria-label="Fechar chat"
+                className="cursor-pointer text-white transition hover:scale-110"
+              >
+                <FiX size={22} />
+              </button>
+            </div>
+          </header>
+
+          <div className="flex-1 overflow-y-auto bg-[#F7F7F7] px-4 py-5 dark:bg-(--bg-main)">
+            <div className="space-y-3">
+              {messages.map((chatMessage) => (
+                <div
+                  key={chatMessage.id}
+                  className={`flex ${
+                    chatMessage.sender === "user"
+                      ? "justify-end"
+                      : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`max-w-[82%] rounded-2xl px-4 py-3 shadow-sm ${
+                      chatMessage.sender === "user"
+                        ? "rounded-br-none bg-[#2161F3] text-white"
+                        : "rounded-bl-none bg-white text-(--text-body) dark:bg-(--bg-card) dark:text-(--text-title)"
+                    }`}
+                  >
+                    <p className="whitespace-pre-line text-sm leading-relaxed">
+                      {chatMessage.text}
+                    </p>
+
+                    <p
+                      className={`mt-1 text-right text-[10px] ${
+                        chatMessage.sender === "user"
+                          ? "text-white/80"
+                          : "text-(--text-muted)"
+                      }`}
+                    >
+                      {chatMessage.time}
+                    </p>
+                  </div>
+                </div>
+              ))}
+
+              {isPending && (
+                <div className="flex justify-start">
+                  <div className="rounded-2xl rounded-bl-none bg-white px-4 py-3 text-sm font-medium text-(--text-muted) shadow-sm dark:bg-(--bg-card)">
+                    Digitando...
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {messages.length === 1 && (
+              <div className="mt-10 grid grid-cols-2 gap-3">
+                {quickActions.map((action) => (
+                  <button
+                    key={action.message}
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => handleSendMessage(action.message)}
+                    className={`
+                      flex min-h-14.5 cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-2 text-center text-xs font-black leading-tight transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60
+                      ${action.className}
+                    `}
+                  >
+                    <span>{action.icon}</span>
+                    <span>{action.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Rodapé */}
-          <div
-            className="border-t py-2 text-center text-[10px]"
-            style={{
-              color: "var(--text-muted)",
-              background: "var(--bg-card)",
-              borderColor: "var(--border-light)",
-            }}
-          >
-            Desenvolvido com carinho para você 💙
+          <div className="border-t border-(--border-light) bg-white px-4 py-3 dark:bg-(--bg-card)">
+            <div className="flex items-center gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={message}
+                disabled={isPending}
+                onChange={(event) => setMessage(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
+                placeholder="Digite sua mensagem..."
+                className="h-11 flex-1 rounded-full border border-(--border-light) bg-[#F7F7F7] px-4 text-sm text-(--text-body) outline-none placeholder:text-(--text-muted) focus:border-(--primary-blue) disabled:cursor-not-allowed disabled:opacity-70 dark:bg-(--bg-main)"
+              />
+
+              <button
+                type="button"
+                onClick={() => handleSendMessage()}
+                disabled={!message.trim() || isPending}
+                aria-label="Enviar mensagem"
+                className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-[#8EA9FF] text-white transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <FiSend size={19} />
+              </button>
+            </div>
           </div>
+
+          <footer className="border-t border-(--border-light) bg-white py-3 text-center dark:bg-(--bg-card)">
+            <p className="text-[10px] font-medium text-(--text-muted)">
+              Desenvolvido com carinho para você 💙
+            </p>
+          </footer>
         </div>
       )}
 
-      {/* ─── Botão flutuante ─────────────────────────────────── */}
       <button
-        aria-label={isOpen ? "Fechar chat" : "Abrir chat"}
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full text-2xl shadow-lg transition hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        style={{
-          background: "linear-gradient(135deg, #35CFE0 0%, #0057D9 100%)",
-        }}
+        type="button"
+        onClick={() => setIsOpen((prevState) => !prevState)}
+        aria-label="Abrir chat"
+        className="fixed bottom-8 right-8 z-190 flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-linear-to-br from-[#23C8E3] to-[#1163E8] text-2xl text-white shadow-xl transition hover:scale-110"
       >
-        🏠
+        <FaHome />
       </button>
     </>
   );
