@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { FiArrowLeft } from "react-icons/fi";
 
@@ -12,42 +13,53 @@ import { Input } from "@/components/Input";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 import { useTheme } from "@/context/ThemeContext";
-import { useForgotPassword } from "@/hooks/useAuth/useForgotPassword";
+import { useResetPassword } from "@/hooks/useAuth/useResetPassword";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { toast } from "sonner";
 
 import {
-  forgotPasswordSchema,
-  type ForgotPasswordFormData,
+  resetPasswordSchema,
+  type ResetPasswordFormData,
 } from "./schema";
 
-export default function ForgotPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const { isDark, isMounted } = useTheme();
-  const { mutateAsync: forgotPassword, isPending } = useForgotPassword();
+  const { mutateAsync: resetPassword, isPending } = useResetPassword();
 
   const {
     control,
     handleSubmit,
     formState: { isValid },
-  } = useForm<ForgotPasswordFormData>({
-    resolver: yupResolver(forgotPasswordSchema),
+  } = useForm<ResetPasswordFormData>({
+    resolver: yupResolver(resetPasswordSchema),
     mode: "onChange",
     defaultValues: {
-      email: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
-  async function handleForgotPassword(data: ForgotPasswordFormData) {
+  async function handleResetPassword(data: ResetPasswordFormData) {
+    if (!token) {
+      toast.error("Token de recuperação não encontrado.");
+      return;
+    }
+
     try {
-      await forgotPassword({
-        email: data.email,
+      await resetPassword({
+        token,
+        password: data.password,
       });
 
-      router.push("/recuperar-senha/sucesso");
+      toast.success("Senha redefinida com sucesso.");
+      router.push("/login");
     } catch (error) {
       console.error(error);
-      toast.error("Não foi possível solicitar a recuperação de senha.");
+      toast.error("Token inválido ou expirado.");
     }
   }
 
@@ -91,14 +103,13 @@ export default function ForgotPasswordPage() {
         <ThemeToggle />
       </div>
 
-      <button
-        type="button"
-        onClick={() => router.back()}
-        aria-label="Voltar"
+      <Link
+        href="/login"
+        aria-label="Voltar para login"
         className="absolute left-8 top-24 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-(--primary-cyan) to-(--primary-blue) text-white shadow-lg transition hover:scale-105"
       >
         <FiArrowLeft size={28} />
-      </button>
+      </Link>
 
       <section className="relative z-10 flex w-full max-w-85 flex-col items-center">
         <Image
@@ -111,21 +122,31 @@ export default function ForgotPasswordPage() {
         />
 
         <h1 className="mb-4 text-center text-3xl font-normal text-(--text-title)">
-          Esqueci a senha
+          Redefinir senha
         </h1>
 
         <form
-          onSubmit={handleSubmit(handleForgotPassword)}
+          onSubmit={handleSubmit(handleResetPassword)}
           className="flex w-full flex-col items-center"
         >
-          <div className="w-full max-w-85">
+          <div className="w-full max-w-85 space-y-3">
             <Input
               control={control}
-              name="email"
-              placeholder="Digite o e-mail cadastrado"
-              type="email"
+              name="password"
+              placeholder="Nova senha"
               variant="login"
               size="md"
+              isPassword
+              className="h-12 px-5 text-base"
+            />
+
+            <Input
+              control={control}
+              name="confirmPassword"
+              placeholder="Confirmar nova senha"
+              variant="login"
+              size="md"
+              isPassword
               className="h-12 px-5 text-base"
             />
           </div>
@@ -138,20 +159,18 @@ export default function ForgotPasswordPage() {
             isLoading={isPending}
             className="mt-5 min-w-37.5 bg-linear-to-r from-(--primary-cyan) to-(--primary-blue) px-8 py-3 text-sm"
           >
-            ENVIAR
+            SALVAR SENHA
           </Button>
-
-          <p className="mt-3 text-center text-sm text-(--text-title)">
-            Já tem conta?{" "}
-            <Link
-              href="/login"
-              className="font-semibold underline transition hover:text-(--primary-blue)"
-            >
-              Login
-            </Link>
-          </p>
         </form>
       </section>
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
