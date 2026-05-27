@@ -44,6 +44,22 @@ export function useGetPartnerships(filters?: GetPartnershipsFilters) {
   });
 }
 
+interface CreatePartnershipPayload {
+  companyName: string;
+  email: string;
+  phone: string;
+  partnershipType: string;
+}
+
+export function useCreatePartnership() {
+  return useMutation({
+    mutationFn: async (payload: CreatePartnershipPayload) => {
+      const { data } = await api.post("/partnerships", payload);
+      return data;
+    },
+  });
+}
+
 export function useUpdatePartnershipStatus() {
   const queryClient = useQueryClient();
 
