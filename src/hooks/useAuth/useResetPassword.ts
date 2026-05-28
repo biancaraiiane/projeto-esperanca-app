@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 
 export interface ResetPasswordPayload {
   token: string;
-  password: string;
+  newPassword: string;
 }
 
 export const resetPasswordRequest = async (payload: ResetPasswordPayload) => {

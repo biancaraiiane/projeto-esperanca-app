@@ -76,15 +76,32 @@ export function ContactSection() {
   });
 
   async function handleContactSubmit(data: ContactFormData) {
-    setSuccessMessage("");
+  setSuccessMessage("");
 
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  try {
+    const payload = {
+      Nome: data.name,
+      "E-mail": data.email,
+      Telefone: `${data.ddd}${data.phone}`.replace(/\D/g, ""),
+      Mensagem: data.message,
+
+      _subject: `Nova mensagem pelo site - ${data.name}`,
+      _template: "table",
+      _captcha: "false",
+      _replyto: data.email,
+    };
+
+    const response = await fetch(
+      "https://formsubmit.co/ajax/projetoesperancaaju@hotmail.com",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(data),
-    });
+    );
 
     if (!response.ok) {
       throw new Error("Não foi possível enviar a mensagem.");
@@ -92,8 +109,11 @@ export function ContactSection() {
 
     setSuccessMessage("Mensagem enviada com sucesso!");
     reset();
+  } catch (error) {
+    console.error(error);
+    setSuccessMessage("Não foi possível enviar a mensagem. Tente novamente.");
   }
-
+}
   return (
     <footer
       id="contatos"

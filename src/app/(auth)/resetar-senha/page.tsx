@@ -52,7 +52,7 @@ function ResetPasswordContent() {
     try {
       await resetPassword({
         token,
-        password: data.password,
+        newPassword: data.password,
       });
 
       toast.success("Senha redefinida com sucesso.");
