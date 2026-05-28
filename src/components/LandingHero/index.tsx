@@ -154,7 +154,7 @@ const { isDark, isMounted } = useTheme();
         {/* Menino atrás - aparece só em telas grandes */}
         <div className="absolute left-[25%] top-17.5 z-20 hidden h-53.75 w-51.25 lg:block xl:left-[26%] xl:top-15 xl:h-65.5 xl:w-60">
           <Image
-            src="/menino-hero-340x420.PNG"
+            src="/menino-hero-340x420.png"
             alt="Menino com as mãos pintadas"
             fill
             priority
@@ -166,7 +166,7 @@ const { isDark, isMounted } = useTheme();
         {/* Menina na frente - aparece só em telas grandes */}
         <div className="absolute left-[13%] top-38.75 z-30 hidden h-75 w-71.25 lg:block xl:left-[14%] xl:top-41.25 xl:h-87.5 xl:w-82.5">
           <Image
-            src="/menina-hero-340x420.PNG"
+            src="/menina-hero-340x420.png"
             alt="Menina com as mãos pintadas"
             fill
             priority
