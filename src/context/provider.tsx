@@ -41,7 +41,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     setUnauthorizedCallback(() => {
-      destroyCookie(undefined, "@ESPERANÇA:T");
+      destroyCookie(undefined, "@ESPERANCA:T");
       clearSession();
       clearRole();
       router.push("/login");
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [clearRole, clearSession, router]);
 
   useEffect(() => {
-    const { "@ESPERANÇA:T": token } = parseCookies();
+    const { "@ESPERANCA:T": token } = parseCookies();
 
     if (!token) return;
 
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
           sameSite: "strict",
         });
 
-        setCookie(undefined, "@ESPERANÇA:T", token, {
+        setCookie(undefined, "@ESPERANCA:T", token, {
           maxAge: 60 * 60 * 24 * 7,
           path: "/",
           secure: isProduction,
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   );
 
   const signOut = useCallback(() => {
-    destroyCookie(undefined, "@ESPERANÇA:T");
+    destroyCookie(undefined, "@ESPERANCA:T");
     clearSession();
     clearRole();
     router.push("/login");
