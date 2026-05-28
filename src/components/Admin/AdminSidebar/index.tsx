@@ -7,6 +7,7 @@ import { FiHome, FiLogOut, FiUser, FiUsers, FiX } from "react-icons/fi";
 import { RiHandbagLine } from "react-icons/ri";
 
 import { useTheme } from "@/context/ThemeContext";
+import { useAuthStore } from "@/store/authStore";
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ const menuItems = [
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const { isDark, isMounted } = useTheme();
   const pathname = usePathname() || "/";
+  const userData = useAuthStore((state) => state.userData);
 
   return (
     <aside
@@ -71,7 +73,9 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       <div className="border-y border-(--border-light) px-6 py-5">
         <p className="text-sm font-semibold text-(--text-muted)">
           Bem-vindo,{" "}
-          <span className="font-black text-(--text-title)">Admin</span>
+          <span className="font-black text-(--text-title)">
+            {userData?.name?.split(" ")[0] ?? "Admin"}
+          </span>
         </p>
 
         <p className="mt-1 text-xs text-(--text-muted)">
