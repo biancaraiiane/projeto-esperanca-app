@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const COOKIE_NAME = "@ESPERANÇA:T";
+const COOKIE_NAME = "@ESPERANCA:T";
 const LOGIN_PAGE = "/login";
 const DEFAULT_ADMIN_PAGE = "/inicio";
 
