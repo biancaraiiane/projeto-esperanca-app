@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { FiHome, FiLogOut, FiUser, FiUsers, FiX } from "react-icons/fi";
 import { RiHandbagLine } from "react-icons/ri";
 
+import { useAuthContext } from "@/context";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuthStore } from "@/store/authStore";
 
@@ -41,6 +42,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const { isDark, isMounted } = useTheme();
   const pathname = usePathname() || "/";
   const userData = useAuthStore((state) => state.userData);
+  const { signOut } = useAuthContext();
 
   return (
     <aside
@@ -106,13 +108,14 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           );
         })}
 
-        <Link
-          href="/login"
+        <button
+          type="button"
+          onClick={signOut}
           className="mt-auto flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-bold text-(--text-body) transition hover:bg-(--bg-section) dark:hover:bg-(--bg-card-soft)"
         >
           <FiLogOut size={18} />
           Sair
-        </Link>
+        </button>
       </nav>
 
       <div className="relative h-25 overflow-hidden">
