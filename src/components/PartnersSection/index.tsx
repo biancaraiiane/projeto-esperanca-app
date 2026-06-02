@@ -16,37 +16,37 @@ const partners: Partner[] = [
   {
     id: "1",
     name: "BCM",
-    logo: "/parceiros/BCM.webp",
+    logo: "/partners/BCM.webp",
   },
   {
     id: "2",
     name: "Unit",
-    logo: "/parceiros/UNIT_V2.png",
+    logo: "/partners/UNIT_V2.png",
   },
   {
     id: "3",
     name: "Prefeitura de Aracaju",
-    logo: "/parceiros/PREFEITURA_ARACAJU_.png",
+    logo: "/partners/PREFEITURA_ARACAJU_.png",
   },
   {
     id: "4",
     name: "Arca Igreja",
-    logo: "/parceiros/ARCA_IGREJA.png",
+    logo: "/partners/ARCA_IGREJA.png",
   },
   {
     id: "5",
     name: "Itabolos",
-    logo: "/parceiros/ITABOLOS.png",
+    logo: "/partners/ITABOLOS.png",
   },
   {
     id: "6",
     name: "SESC",
-    logo: "/parceiros/SESC.png",
+    logo: "/partners/SESC.png",
   },
   {
     id: "7",
     name: "PIBAF",
-    logo: "/parceiros/pibaf.webp",
+    logo: "/partners/pibaf.webp",
   },
 ];
 
