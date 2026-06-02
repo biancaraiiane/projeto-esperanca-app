@@ -1,52 +1,16 @@
+"use client";
+
+import { useState } from "react";
 import { FiFileText } from "react-icons/fi";
 
-interface TransparencyFile {
-  id: string;
-  title: string;
-  href: string;
-  variant: "yellow" | "purple" | "green" | "cyan" | "pink" | "red";
-}
+import { TransparencyModal } from "@/components/TransparencyModal";
 
-const transparencyFiles: TransparencyFile[] = [
-  {
-    id: "1",
-    title: "Informações Institucionais",
-    href: "/transparencia/informacoes-institucionais.pdf",
-    variant: "yellow",
-  },
-  {
-    id: "2",
-    title: "Impacto Social",
-    href: "/transparencia/impacto-social.pdf",
-    variant: "purple",
-  },
-  {
-    id: "3",
-    title: "Relatórios financeiros",
-    href: "/transparencia/relatorios-financeiros.pdf",
-    variant: "green",
-  },
-  {
-    id: "4",
-    title: "Contatos e Serviços",
-    href: "/transparencia/contatos-e-servicos.pdf",
-    variant: "cyan",
-  },
-  {
-    id: "5",
-    title: "Estrutura Administrativa e Contatos",
-    href: "/transparencia/estrutura-administrativa.pdf",
-    variant: "pink",
-  },
-  {
-    id: "6",
-    title: "Outros / Itens Adicionais",
-    href: "/transparencia/outros-itens-adicionais.pdf",
-    variant: "red",
-  },
-];
+import {
+  transparencyCategories,
+  type TransparencyCategory,
+} from "@/data/transparencyData";
 
-const fileVariantClasses: Record<TransparencyFile["variant"], string> = {
+const fileVariantClasses: Record<TransparencyCategory["variant"], string> = {
   yellow:
     "bg-[#FFF4BE] text-[#111111] dark:bg-[#2A2514] dark:text-[#F5D96B] dark:border-[#5A4B18]",
   purple:
@@ -62,6 +26,10 @@ const fileVariantClasses: Record<TransparencyFile["variant"], string> = {
 };
 
 export function TransparencySection() {
+  const [selectedFile, setSelectedFile] = useState<TransparencyCategory | null>(
+    null,
+  );
+
   return (
     <section
       id="transparencia"
@@ -80,18 +48,24 @@ export function TransparencySection() {
           (Lei de Acesso à Informação) e Lei nº 13.019/2014 (Normas Gerais para
           as Parcerias entre a Administração Pública e Organizações da Sociedade
           Civil), reafirmando nosso compromisso com uma gestão responsável e
-          transparente, conforme as exigências do Projeto ONG Transparente do
-          Ministério Público de Sergipe.
+          transparente, conforme as exigências do{" "}
+          <a
+            href="https://www.mpse.mp.br/index.php/2020/08/06/projeto-ong-transparente-do-mpse-e-selecionado-para-a-17a-edicao-do-premio-innovare/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-(--primary-blue) underline hover:text-(--primary-cyan) dark:text-(--primary-cyan) dark:hover:text-(--primary-blue)"
+          >
+            Projeto ONG Transparente do Ministério Público de Sergipe.
+          </a>
         </p>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {transparencyFiles.map((file) => (
-            <a
+          {transparencyCategories.map((file) => (
+            <button
               key={file.id}
-              href={file.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex min-h-19.5 items-center gap-4 rounded-lg border border-transparent px-5 py-4 shadow-lg transition hover:-translate-y-1 hover:scale-[1.02] ${fileVariantClasses[file.variant]}`}
+              type="button"
+              onClick={() => setSelectedFile(file)}
+              className={`flex min-h-19.5 cursor-pointer items-center gap-4 rounded-lg border border-transparent px-5 py-4 text-left shadow-lg transition hover:-translate-y-1 hover:scale-[1.02] ${fileVariantClasses[file.variant]}`}
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border-3 border-current">
                 <FiFileText size={24} />
@@ -100,10 +74,16 @@ export function TransparencySection() {
               <span className="text-sm font-black leading-tight">
                 {file.title}
               </span>
-            </a>
+            </button>
           ))}
         </div>
       </div>
+
+      <TransparencyModal
+        isOpen={!!selectedFile}
+        data={selectedFile}
+        onClose={() => setSelectedFile(null)}
+      />
     </section>
   );
 }
