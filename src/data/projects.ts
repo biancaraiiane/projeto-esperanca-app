@@ -21,8 +21,7 @@ export const projects: ProjectItem[] = [
       "/dia-das-maes/projeto-dia-das-maes4.jpeg",
     ],
     description: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Esse texto pode ser substituído pela história real do projeto.",
+      "A semana das mães foi marcada por muito amor, acolhimento e valorização do autocuidado. Durante esse período, buscamos proporcionar momentos especiais de cuidado, escuta e relaxamento, reconhecendo a importância de cada mãe e responsável em nosso projeto. Também foi um momento de homenagem e demonstração de carinho, fortalecendo vínculos e promovendo bem-estar. As atividades realizadas trouxeram leveza, troca de experiências e muitos momentos afetivos para todas as participantes.",
     ],
   },
   {
@@ -37,8 +36,8 @@ export const projects: ProjectItem[] = [
       "/unit-higiene-bucal/higiene-bucal4.jpeg",
     ],
     description: [
-      "Aqui você pode escrever a história desse projeto, explicando o objetivo, como aconteceu, quem participou e qual impacto gerou para as crianças.",
-      "Também pode adicionar mais parágrafos no array description, e eles aparecerão automaticamente na página.",
+      "Tivemos mais um momento de conhecimento e aprendizagem com os alunos extensionistas da Unit, que contribuíram de forma significativa para o desenvolvimento das nossas atividades. Com carinho e atenção, eles reforçaram conteúdos importantes e apresentaram novas temáticas aos alunos.",
+      "Esses encontros proporcionam experiências enriquecedoras, despertando curiosidade, participação e troca de conhecimentos. Além de fortalecer o aprendizado, os momentos com os extensionistas tornam as atividades ainda mais dinâmicas e acolhedoras.",
     ],
   },
   {
@@ -53,8 +52,8 @@ export const projects: ProjectItem[] = [
       "/maio-laranja/maio-laranja4.jpeg",
     ],
     description: [
-      "Descrição da oficina educativa. Substitua esse texto pelo conteúdo real do Projeto Esperança.",
-      "Você pode usar quantos parágrafos quiser nesse array.",
+      "Durante a campanha Maio Laranja, realizamos atividades voltadas à conscientização e ao combate da violência e do abuso sexual de crianças e adolescentes. As ações promoveram diálogo, informação e reflexão de maneira acessível e cuidadosa.",
+      "Ao longo das atividades, reforçamos a importância da proteção, do cuidado e da escuta das crianças e adolescentes, incentivando a construção de ambientes mais seguros e acolhedores para todos.",
     ],
   },
 ];
